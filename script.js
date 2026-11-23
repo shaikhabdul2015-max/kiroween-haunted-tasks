@@ -126,3 +126,23 @@ setInterval(() => {
     : "🤖 AI Coach: 🏆 Zero backlog! Tap ⚡Cmd to load demo tasks or summon a new goal.";
 }, 1000);
 renderTasks();
+function autoPrioritize() {
+  const rank = { doom: 3, hex: 2, minor: 1 };
+  tasks.sort((a, b) => (a.done - b.done) || ((rank[b.priority] || 1) - (rank[a.priority] || 1)));
+  playSpookySound("exorcise");
+  saveAndRender();
+}
+function drawWsBars() {
+  const c = document.getElementById("wsBarChart"); if (!c) return;
+  const ctx = c.getContext("2d");
+  ctx.clearRect(0, 0, 84, 36);
+  const cols = ["#00f5d4", "#ffbe0b", "#ff6b00"];
+  ["coding", "study", "personal"].forEach((ws, i) => {
+    const cnt = tasks.filter(t => (t.workspace || "coding") === ws).length;
+    const h = Math.min(28, cnt * 5 + 4);
+    ctx.fillStyle = cols[i];
+    ctx.fillRect(10 + i * 24, 34 - h, 16, h);
+  });
+}
+setInterval(drawWsBars, 1000);
+drawWsBars();

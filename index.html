@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎃 Kiroween Singularity v9.0</title>
+  <title>🎃 Kiroween Omega v10.0</title>
   <link rel="stylesheet" href="style.css?v=9.2">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ff6b00">
@@ -21,7 +21,7 @@
           <button id="soundToggle" class="icon-btn" onclick="toggleSound()">🔊</button>
         </div>
       </div>
-      <h1>🎃 Kiroween Singularity v9.0 👻</h1>
+      <h1>🎃 Kiroween Omega v10.0 👻</h1>
       <div class="xp-container">
         <div class="xp-info"><span>Soul Power (XP)</span><span id="xpText">0 / 200 XP</span></div>
         <div class="xp-bar"><div id="xpFill"></div></div>
@@ -43,7 +43,7 @@
       <div class="pomo-actions"><button id="pomoStartBtn" onclick="togglePomo()">▶ Start</button><button class="sec-mini" onclick="resetPomo()">↺</button></div>
     </div>
     <div class="analytics-card">
-      <canvas id="progressChart" width="76" height="76"></canvas>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><canvas id="progressChart" width="76" height="76"></canvas><canvas id="wsBarChart" width="84" height="36"></canvas></div>
       <div class="stats">
         <div class="stat-box"><span id="totalCount">0</span><small>Total</small></div>
         <div class="stat-box"><span id="activeCount">0</span><small>Cursed</small></div>
@@ -72,7 +72,7 @@
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
     </div>
   </div>
-  <script src="script.js?v=9.5"></script>
-<div id="cmdModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99;align-items:center;justify-content:center"><div style="background:#1a0b2e;border:1px solid #ff6b00;padding:16px;border-radius:14px;width:85%;max-width:340px"><h3 style="margin:0 0 10px;color:#ff6b00">⚡ Command Palette</h3><button class="primary-btn" style="margin-bottom:8px" onclick="loadDemo();toggleCmd()">✨ Load Demo Tasks</button><button class="primary-btn" style="margin-bottom:8px" onclick="clearDone();toggleCmd()">🧹 Clear Completed</button><button class="primary-btn" style="margin-bottom:8px" onclick="shareBoard();toggleCmd()">🔗 Copy Share Link</button><button class="sec-btn" style="width:100%" onclick="toggleCmd()">✕ Close</button></div></div>
+  <script src="script.js?v=10.0"></script>
+<div id="cmdModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99;align-items:center;justify-content:center"><div style="background:#1a0b2e;border:1px solid #ff6b00;padding:16px;border-radius:14px;width:85%;max-width:340px"><h3 style="margin:0 0 10px;color:#ff6b00">⚡ Command Palette</h3><button class="primary-btn" style="margin-bottom:8px" onclick="loadDemo();toggleCmd()">✨ Load Demo Tasks</button><button class="primary-btn" style="margin-bottom:8px" onclick="autoPrioritize();toggleCmd()">🧠 AI Auto-Prioritize</button><button class="primary-btn" style="margin-bottom:8px" onclick="clearDone();toggleCmd()">🧹 Clear Completed</button><button class="primary-btn" style="margin-bottom:8px" onclick="shareBoard();toggleCmd()">🔗 Copy Share Link</button><button class="sec-btn" style="width:100%" onclick="toggleCmd()">✕ Close</button></div></div>
 </body>
 </html>
