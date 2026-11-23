@@ -169,8 +169,8 @@ function spawnBurst(x, y, n) { const cols = ['#ff6b00', '#38b000', '#9d4edd', '#
   requestAnimationFrame(loop);
 })();
 
-document.addEventListener('DOMContentLoaded', () => {
+
   const inp = document.getElementById('taskInput');
   if (inp) inp.addEventListener('keypress', e => { if (e.key === 'Enter') addTask(); });
-  renderTasks(); setInterval(renderTasks, 1000);
+  renderTasks(); setInterval(renderTasks, 1000); //
 });
