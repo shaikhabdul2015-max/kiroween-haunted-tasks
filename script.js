@@ -16,7 +16,7 @@ function renderHeatmap() {
     const k = d.toISOString().slice(0, 10), c = activityLog[k] || 0;
     if (c > 0) streak++;
     const lvl = c >= 5 ? "lvl-3" : c >= 2 ? "lvl-2" : c >= 1 ? "lvl-1" : "";
-    g.innerHTML += `<div class="hm-day ${lvl}"><div>${days[d.getDay()]}</div><div>${c}</div></div>`;
+    g.innerHTML += "<div class=\"hm-day " + lvl + "\"><div>" + days[d.getDay()] + "</div><div>" + c + "</div></div>";
   }
   document.getElementById("streakBadge").innerText = "🔥 " + Math.max(1, streak) + "d";
   document.getElementById("todayCount").innerText = "Today: " + (activityLog[getTodayKey()] || 0);
