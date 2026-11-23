@@ -1,0 +1,15 @@
+{
+  "name": "Kiroween Haunted Tasks Pro",
+  "short_name": "Kiroween Pro",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#09040e",
+  "theme_color": "#ff6b00",
+  "icons": [
+    {
+      "src": "https://jsdelivr.net",
+      "sizes": "72x72",
+      "type": "image/png"
+    }
+  ]
+}
