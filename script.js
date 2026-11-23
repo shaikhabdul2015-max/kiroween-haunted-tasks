@@ -28,10 +28,18 @@ function startVoiceInput() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) return alert("Voice API not supported in this browser!");
   const btn = document.getElementById("voiceBtn"), inp = document.getElementById("taskInput"), rec = new SR();
-  rec.lang = "en-US"; btn.classList.add("listening"); inp.placeholder = "🎙️ Listening...";
-  rec.onresult = e => { inp.value = e.results.item(0).item(0).transcript; btn.classList.remove("listening"); inp.placeholder = "Summon task or tap 🎙️..."; addTask(); };
-  rec.onerror = rec.onend = () => { btn.classList.remove("listening"); inp.placeholder = "Summon task or tap 🎙️..."; };
-  try { rec.start(); } catch (err) { btn.classList.remove("listening"); }
+  rec.lang = "en-US"; rec.interimResults = false; rec.maxAlternatives = 1;
+  btn.classList.add("listening"); inp.placeholder = "🎙️ Listening... Speak now!";
+  rec.onresult = e => {
+    const txt = e.results.item(0).item(0).transcript;
+    inp.value = txt;
+    btn.classList.remove("listening");
+    inp.placeholder = "Summon task or tap 🎙️...";
+    addTask();
+  };
+  rec.onerror = e => { btn.classList.remove("listening"); inp.placeholder = "Summon task or tap 🎙️..."; alert("🎙️ Mic Error: " + e.error); };
+  rec.onend = () => { btn.classList.remove("listening"); inp.placeholder = "Summon task or tap 🎙️..."; };
+  try { rec.start(); } catch (err) { btn.classList.remove("listening"); alert("Mic failed: " + err.message); }
 }
 
 let pomoSeconds = 1500, pomoInterval = null;
