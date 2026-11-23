@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎃 Kiroween Haunted Tasks Pro</title>
+  <title>🎃 Kiroween Elite v3.0</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ff6b00">
@@ -11,28 +11,37 @@
 <body>
   <div class="container">
     <header>
-      <h1>🎃 Kiroween Pro 👻</h1>
-      <p class="subtitle">Exorcise your tasks before the curse strikes...</p>
-      <button id="soundToggle" class="icon-btn" onclick="toggleSound()">🔊 Sound: ON</button>
+      <div class="top-bar">
+        <span id="rankBadge" class="badge">🕯️ Novice Exorcist</span>
+        <button id="soundToggle" class="icon-btn" onclick="toggleSound()">🔊 ON</button>
+      </div>
+      <h1>🎃 Kiroween Elite 👻</h1>
+      <div class="xp-container">
+        <div class="xp-info"><span>Soul Power (XP)</span><span id="xpText">0 / 200 XP</span></div>
+        <div class="xp-bar"><div id="xpFill"></div></div>
+      </div>
     </header>
 
-    <div class="stats">
-      <div class="stat-box"><span id="totalCount">0</span><small>Total</small></div>
-      <div class="stat-box"><span id="activeCount">0</span><small>Cursed</small></div>
-      <div class="stat-box"><span id="doneCount">0</span><small>Exorcised</small></div>
+    <div class="analytics-card">
+      <canvas id="progressChart" width="90" height="90"></canvas>
+      <div class="stats">
+        <div class="stat-box"><span id="totalCount">0</span><small>Total</small></div>
+        <div class="stat-box"><span id="activeCount">0</span><small>Cursed</small></div>
+        <div class="stat-box"><span id="doneCount">0</span><small>Exorcised</small></div>
+      </div>
     </div>
 
     <div class="input-group">
-      <input type="text" id="taskInput" placeholder="Enter a cursed task...">
+      <input type="text" id="taskInput" placeholder="Summon a new cursed task...">
       <div class="row">
         <select id="prioritySelect">
-          <option value="minor">🕯️ Minor Curse</option>
-          <option value="hex">🔮 Hex</option>
-          <option value="doom">💀 Deadly Doom</option>
+          <option value="minor">🕯️ Minor Curse (+25 XP)</option>
+          <option value="hex">🔮 Hex (+50 XP)</option>
+          <option value="doom">💀 Deadly Doom (+100 XP)</option>
         </select>
         <select id="timerSelect">
           <option value="0">⏳ No Timer</option>
-          <option value="1">⏱️ 1 Min (Test)</option>
+          <option value="1">⏱️ 1 Min</option>
           <option value="15">⏱️ 15 Mins</option>
           <option value="60">⏱️ 1 Hour</option>
         </select>
@@ -50,11 +59,14 @@
       </select>
     </div>
 
+    <p class="hint">💡 Tip: Use ▲/▼ to reorder or ✏️ to edit tasks</p>
     <ul id="taskList"></ul>
 
     <div class="footer-actions">
-      <button class="sec-btn" onclick="exportData()">⬇️ Backup JSON</button>
-      <button class="sec-btn" onclick="clearCompleted()">🧹 Clear Exorcised</button>
+      <button class="sec-btn" onclick="exportData()">⬇️ Backup</button>
+      <button class="sec-btn" onclick="document.getElementById('importFile').click()">⬆️ Restore</button>
+      <button class="sec-btn danger" onclick="clearCompleted()">🧹 Clear</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
     </div>
   </div>
   <script src="script.js"></script>
