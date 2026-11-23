@@ -56,3 +56,4 @@ function resetPomo() { clearInterval(pomoInterval); pomoInterval = null; pomoSec
 function updatePomoUI() { document.getElementById("pomoDisplay").innerText = String(Math.floor(pomoSeconds/60)).padStart(2,"0") + ":" + String(pomoSeconds%60).padStart(2,"0"); }
 function cycleTheme() { themeIdx = (themeIdx + 1) % themes.length; document.body.setAttribute("data-theme", themes[themeIdx]); }
 function toggleSound() { soundEnabled = !soundEnabled; document.getElementById("soundToggle").innerText = soundEnabled ? "🔊" : "🔇"; }
+renderTasks();
