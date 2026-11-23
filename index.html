@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎃 Kiroween Haunted Tasks</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🎃 Kiroween Haunted Tasks 👻</h1>
+    <p class="subtitle">Banish your cursed tasks before midnight...</p>
+    <div class="input-group">
+      <input type="text" id="taskInput" placeholder="Enter a cursed task...">
+      <select id="prioritySelect">
+        <option value="minor">🕯️ Minor Curse</option>
+        <option value="hex">🔮 Hex</option>
+        <option value="doom">💀 Deadly Doom</option>
+      </select>
+      <button onclick="addTask()">Summon</button>
+    </div>
+    <ul id="taskList"></ul>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
