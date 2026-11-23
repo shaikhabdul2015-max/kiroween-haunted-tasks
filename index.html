@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎃 Kiroween Ultra v6.0</title>
-  <link rel="stylesheet" href="style.css?v=6.5">
+  <title>🎃 Kiroween Quantum v7.0</title>
+  <link rel="stylesheet" href="style.css?v=7.0">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ff6b00">
 </head>
@@ -16,18 +16,19 @@
         <span id="rankBadge" class="badge">Lv.1 🕯️ Novice</span>
         <div class="top-controls">
           <span id="streakBadge" class="streak-badge">🔥 1d</span>
+          <button class="icon-btn" onclick="cycleView()" id="viewToggleBtn" title="Switch List/Board">🗂️ Board</button>
           <button class="icon-btn" onclick="cycleTheme()">🎨</button>
           <button id="soundToggle" class="icon-btn" onclick="toggleSound()">🔊</button>
         </div>
       </div>
-      <h1>🎃 Kiroween Ultra v6.0 👻</h1>
+      <h1>🎃 Kiroween Quantum v7.0 👻</h1>
       <div class="xp-container">
         <div class="xp-info"><span>Soul Power (XP)</span><span id="xpText">0 / 200 XP</span></div>
         <div class="xp-bar"><div id="xpFill"></div></div>
       </div>
     </header>
     <div class="heatmap-card">
-      <div class="hm-header"><small>📊 7-DAY SOUL ACTIVITY</small><small id="todayCount">Today: 0</small></div>
+      <div class="hm-header"><small>📊 7-DAY VELOCITY & HEATMAP</small><small id="todayCount">Today: 0</small></div>
       <div id="heatmapGrid" class="heatmap-grid"></div>
     </div>
     <div class="workspace-tabs">
@@ -61,15 +62,15 @@
       <input type="text" id="searchInput" placeholder="🔍 Search..." oninput="renderTasks()">
       <select id="filterSelect" onchange="renderTasks()"><option value="all">All</option><option value="active">Active</option><option value="done">Exorcised</option><option value="doom">Doom</option></select>
     </div>
-    <ul id="taskList"></ul>
+    <div id="taskContainer"><ul id="taskList"></ul></div>
     <div class="footer-actions">
       <button class="sec-btn" onclick="copyReport()">📋 Report</button>
-      <button class="sec-btn" onclick="exportData()">⬇️ Backup</button>
-      <button class="sec-btn" onclick="document.getElementById('importFile').click()">⬆️ Restore</button>
-      <button class="sec-btn danger" onclick="clearCompleted()">🧹 Clear</button>
+      <button class="sec-btn" onclick="exportCSV()">📊 CSV</button>
+      <button class="sec-btn" onclick="exportData()">⬇️ JSON</button>
+      <button class="sec-btn" onclick="document.getElementById('importFile').click()">⬆️ Load</button>
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
     </div>
   </div>
-  <script src="script.js?v=6.5"></script>
+  <script src="script.js?v=7.0"></script>
 </body>
 </html>

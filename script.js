@@ -1,11 +1,17 @@
 let tasks = JSON.parse(localStorage.getItem("hauntedTasksPro") || "[]");
 let xp = parseInt(localStorage.getItem("hauntedXP") || "0", 10);
 let activityLog = JSON.parse(localStorage.getItem("hauntedActivity") || "{}");
-let themeIdx = 0, currentWorkspace = "all", soundEnabled = true;
+let themeIdx = 0, currentWorkspace = "all", soundMode = 1, viewMode = "list";
 const themes = ["haunted", "toxic", "blood"];
 
 function getTodayKey() { return new Date().toISOString().slice(0, 10); }
 function recordActivity() { const k = getTodayKey(); activityLog[k] = (activityLog[k] || 0) + 1; localStorage.setItem("hauntedActivity", JSON.stringify(activityLog)); }
+
+function cycleView() {
+  viewMode = viewMode === "list" ? "board" : "list";
+  document.getElementById("viewToggleBtn").innerText = viewMode === "list" ? "🗂️ Board" : "📋 List";
+  renderTasks();
+}
 
 function renderHeatmap() {
   const g = document.getElementById("heatmapGrid"); if (!g) return;
@@ -16,7 +22,7 @@ function renderHeatmap() {
     const k = d.toISOString().slice(0, 10), c = activityLog[k] || 0;
     if (c > 0) streak++;
     const lvl = c >= 5 ? "lvl-3" : c >= 2 ? "lvl-2" : c >= 1 ? "lvl-1" : "";
-    g.innerHTML += "<div class=\"hm-day " + lvl + "\"><div>" + days[d.getDay()] + "</div><div>" + c + "</div></div>";
+    g.innerHTML += "<div class='hm-day " + lvl + "'><div>" + days[d.getDay()] + "</div><div>" + c + "</div></div>";
   }
   document.getElementById("streakBadge").innerText = "🔥 " + Math.max(1, streak) + "d";
   document.getElementById("todayCount").innerText = "Today: " + (activityLog[getTodayKey()] || 0);
@@ -30,21 +36,14 @@ function startVoiceInput() {
   const btn = document.getElementById("voiceBtn"), inp = document.getElementById("taskInput"), rec = new SR();
   rec.lang = "en-US"; rec.interimResults = false; rec.maxAlternatives = 1;
   btn.classList.add("listening"); inp.placeholder = "🎙️ Listening... Speak now!";
-  rec.onresult = e => {
-    const txt = e.results.item(0).item(0).transcript;
-    inp.value = txt;
-    btn.classList.remove("listening");
-    inp.placeholder = "Summon task or tap 🎙️...";
-    addTask();
-  };
+  rec.onresult = e => { inp.value = e.results.item(0).item(0).transcript; btn.classList.remove("listening"); inp.placeholder = "Summon task or tap 🎙️..."; addTask(); };
   rec.onerror = e => { btn.classList.remove("listening"); inp.placeholder = "Summon task or tap 🎙️..."; alert("🎙️ Mic Error: " + e.error); };
   rec.onend = () => { btn.classList.remove("listening"); inp.placeholder = "Summon task or tap 🎙️..."; };
-  try { rec.start(); } catch (err) { btn.classList.remove("listening"); alert("Mic failed: " + err.message); }
+  try { rec.start(); } catch (err) { btn.classList.remove("listening"); }
 }
 
 let pomoSeconds = 1500, pomoInterval = null;
 function togglePomo() {
-  if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
   const btn = document.getElementById("pomoStartBtn");
   if (pomoInterval) { clearInterval(pomoInterval); pomoInterval = null; btn.innerText = "▶ Resume"; }
   else {
@@ -54,7 +53,6 @@ function togglePomo() {
       if (pomoSeconds <= 0) {
         clearInterval(pomoInterval); pomoInterval = null; btn.innerText = "▶ Start";
         xp += 150; recordActivity(); spawnBurst(window.innerWidth / 2, 200, 50); playSpookySound("exorcise"); saveAndRender();
-        if ("Notification" in window && Notification.permission === "granted") new Notification("🎃 Focus Ritual Complete!", { body: "+150 XP Awarded!" });
         pomoSeconds = 1500; updatePomoUI();
       }
     }, 1000);
@@ -63,18 +61,21 @@ function togglePomo() {
 function resetPomo() { clearInterval(pomoInterval); pomoInterval = null; pomoSeconds = 1500; document.getElementById("pomoStartBtn").innerText = "▶ Start"; updatePomoUI(); }
 function updatePomoUI() { document.getElementById("pomoDisplay").innerText = String(Math.floor(pomoSeconds/60)).padStart(2,"0") + ":" + String(pomoSeconds%60).padStart(2,"0"); }
 function cycleTheme() { themeIdx = (themeIdx + 1) % themes.length; document.body.setAttribute("data-theme", themes[themeIdx]); }
-function toggleSound() { soundEnabled = !soundEnabled; document.getElementById("soundToggle").innerText = soundEnabled ? "🔊" : "🔇"; }
-renderTasks();
+function toggleSound() {
+  soundMode = (soundMode + 1) % 3;
+  const icons = ["🔇", "🔊", "🛸"];
+  document.getElementById("soundToggle").innerText = icons[soundMode];
+}
 function playSpookySound(type) {
-  if (!soundEnabled) return;
+  if (soundMode === 0) return;
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator(), gain = ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
-    osc.type = type === "summon" ? "sawtooth" : "sine";
-    osc.frequency.setValueAtTime(type === "summon" ? 140 : 320, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(type === "summon" ? 55 : 880, ctx.currentTime + 0.25);
-    gain.gain.setValueAtTime(0.15, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+    osc.type = soundMode === 2 ? "square" : (type === "summon" ? "sawtooth" : "sine");
+    osc.frequency.setValueAtTime(soundMode === 2 ? 520 : (type === "summon" ? 140 : 320), ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(soundMode === 2 ? 180 : (type === "summon" ? 55 : 880), ctx.currentTime + 0.25);
+    gain.gain.setValueAtTime(0.14, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
     osc.start(); osc.stop(ctx.currentTime + 0.25);
   } catch (e) {}
 }
@@ -92,8 +93,7 @@ function addTask() {
 function smartSplitTask(id) {
   const t = tasks.find(x => x.id === id); if (!t) return;
   t.subtasks = t.subtasks || [];
-  const steps = ["📐 Plan: " + t.text, "⚡ Execute core steps", "✅ Test & finalize"];
-  steps.forEach(s => t.subtasks.push({ text: s, done: false }));
+  ["📐 Plan: " + t.text, "⚡ Execute core steps", "✅ Test & finalize"].forEach(s => t.subtasks.push({ text: s, done: false }));
   playSpookySound("exorcise"); saveAndRender();
 }
 
@@ -111,15 +111,19 @@ function toggleTask(id, e) {
 function editTask(id) { const t = tasks.find(x => x.id === id), u = t && prompt("Edit task:", t.text); if (u && u.trim()) { t.text = u.trim(); saveAndRender(); } }
 function moveTask(i, d) { const n = i + d; if (n >= 0 && n < tasks.length) { [tasks[i], tasks[n]] = [tasks[n], tasks[i]]; saveAndRender(); } }
 function deleteTask(id) { tasks = tasks.filter(x => x.id !== id); saveAndRender(); }
-function clearCompleted() { tasks = tasks.filter(x => !x.done); saveAndRender(); }
 
+function exportCSV() {
+  let csv = "Task,Workspace,Priority,Status,Subtasks\n";
+  tasks.forEach(t => { csv += `"${t.text.replace(/"/g, '""')}",${t.workspace || "coding"},${t.priority},${t.done ? "Done" : "Active"},${(t.subtasks || []).length}\n`; });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "kiroween-quantum-v7.csv"; a.click();
+}
 function copyReport() {
   const done = tasks.filter(t => t.done).length, rank = document.getElementById("rankBadge").innerText;
-  let md = "# Kiroween Ultra v6.0 Report\n- Rank: " + rank + " (" + xp + " XP)\n- Done: " + done + "/" + tasks.length + "\n\n";
+  let md = "# Kiroween Quantum v7.0 Report\n- Rank: " + rank + " (" + xp + " XP)\n- Done: " + done + "/" + tasks.length + "\n\n";
   tasks.forEach(t => { md += "- [" + (t.done ? "x" : " ") + "] " + t.text + "\n"; });
   navigator.clipboard.writeText(md).then(() => alert("Report copied!"));
 }
-function exportData() { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: "6.3", xp, activityLog, tasks }, null, 2)], { type: "application/json" })); a.download = "kiroween-v6.json"; a.click(); }
+function exportData() { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: "7.0", xp, activityLog, tasks }, null, 2)], { type: "application/json" })); a.download = "kiroween-v7.json"; a.click(); }
 function importData(e) { const f = e.target.files; if (!f) return; const r = new FileReader(); r.onload = ev => { try { const d = JSON.parse(ev.target.result); tasks = Array.isArray(d) ? d : (d.tasks || tasks); xp = d.xp || xp; activityLog = d.activityLog || activityLog; saveAndRender(); alert("Restored!"); } catch { alert("Invalid file!"); } }; r.readAsText(f); }
 
 function drawChart(done, total) {
@@ -133,8 +137,23 @@ function drawChart(done, total) {
   ctx.fillText(Math.round(pct * 100) + "%", 38, 38);
 }
 
+function buildTaskCard(t, idx) {
+  const ws = t.workspace || "coding";
+  let timerHtml = "", overdue = false;
+  if (t.deadline && !t.done) {
+    const diff = t.deadline - Date.now();
+    if (diff <= 0) { overdue = true; timerHtml = "<span class='timer-badge'>EXPIRED!</span>"; }
+    else timerHtml = "<span class='timer-badge'>" + Math.floor(diff/60000) + "m " + Math.floor((diff%60000)/1000) + "s</span>";
+  }
+  const subs = (t.subtasks || []).map((s, si) => "<div class='sub-item " + (s.done?"sub-done":"") + "' onclick='toggleSubtask(" + t.id + "," + si + ")'>" + (s.done?"[x] ":"[ ] ") + s.text + "</div>").join("");
+  const li = document.createElement("li");
+  li.className = "task-card " + t.priority + (t.done?" done":"") + (overdue?" overdue":"");
+  li.innerHTML = "<div class='task-top'><div class='task-info'><div class='main-text'>" + t.text + "</div><div class='meta-row'><span class='tag-badge'>" + ws + "</span>" + timerHtml + "</div></div><div class='actions'><button class='ai-btn' onclick='smartSplitTask(" + t.id + ")'>✨Split</button><button onclick='moveTask(" + idx + ",-1)'>▲</button><button onclick='moveTask(" + idx + ",1)'>▼</button><button onclick='editTask(" + t.id + ")'>Edit</button><button class='ex-btn' onclick='toggleTask(" + t.id + ",event)'>" + (t.done?"Undo":"✓") + "</button><button class='del-btn' onclick='deleteTask(" + t.id + ")'>✕</button></div></div>" + (subs ? "<div class='subtasks'>" + subs + "</div>" : "");
+  return li;
+}
+
 function renderTasks() {
-  const list = document.getElementById("taskList"), q = document.getElementById("searchInput").value.toLowerCase(), f = document.getElementById("filterSelect").value;
+  const container = document.getElementById("taskContainer"), q = document.getElementById("searchInput").value.toLowerCase(), f = document.getElementById("filterSelect").value;
   const vis = currentWorkspace === "all" ? tasks : tasks.filter(t => (t.workspace || "coding") === currentWorkspace);
   const doneCount = vis.filter(t => t.done).length;
   document.getElementById("totalCount").innerText = vis.length; document.getElementById("doneCount").innerText = doneCount; document.getElementById("activeCount").innerText = vis.length - doneCount;
@@ -144,24 +163,27 @@ function renderTasks() {
   document.getElementById("xpText").innerText = (xp % 200) + " / 200 XP";
   document.getElementById("xpFill").style.width = (((xp % 200) / 200) * 100) + "%";
 
-  list.innerHTML = "";
+  const filtered = [];
   tasks.forEach((t, idx) => {
     const ws = t.workspace || "coding";
     if (currentWorkspace !== "all" && ws !== currentWorkspace) return;
     if (!t.text.toLowerCase().includes(q)) return;
     if ((f === "active" && t.done) || (f === "done" && !t.done) || (f === "doom" && t.priority !== "doom")) return;
-    let timerHtml = "", overdue = false;
-    if (t.deadline && !t.done) {
-      const diff = t.deadline - Date.now();
-      if (diff <= 0) { overdue = true; timerHtml = "<span class='timer-badge'>EXPIRED!</span>"; }
-      else timerHtml = "<span class='timer-badge'>" + Math.floor(diff/60000) + "m " + Math.floor((diff%60000)/1000) + "s</span>";
-    }
-    const subs = (t.subtasks || []).map((s, si) => "<div class='sub-item " + (s.done?"sub-done":"") + "' onclick='toggleSubtask(" + t.id + "," + si + ")'>" + (s.done?"[x] ":"[ ] ") + s.text + "</div>").join("");
-    const li = document.createElement("li");
-    li.className = "task-card " + t.priority + (t.done?" done":"") + (overdue?" overdue":"");
-    li.innerHTML = "<div class='task-top'><div class='task-info'><div class='main-text'>" + t.text + "</div><div class='meta-row'><span class='tag-badge'>" + ws + "</span>" + timerHtml + "</div></div><div class='actions'><button class='ai-btn' onclick='smartSplitTask(" + t.id + ")'>✨Split</button><button onclick='moveTask(" + idx + ",-1)'>▲</button><button onclick='moveTask(" + idx + ",1)'>▼</button><button onclick='editTask(" + t.id + ")'>Edit</button><button class='ex-btn' onclick='toggleTask(" + t.id + ",event)'>" + (t.done?"Undo":"✓") + "</button><button class='del-btn' onclick='deleteTask(" + t.id + ")'>✕</button></div></div>" + (subs ? "<div class='subtasks'>" + subs + "</div>" : "");
-    list.appendChild(li);
+    filtered.push({ t, idx });
   });
+
+  container.innerHTML = "";
+  if (viewMode === "board") {
+    const grid = document.createElement("div"); grid.className = "board-grid";
+    const col1 = document.createElement("div"); col1.className = "board-col"; col1.innerHTML = "<h4>🎃 CURSED</h4><ul></ul>";
+    const col2 = document.createElement("div"); col2.className = "board-col"; col2.innerHTML = "<h4>👻 EXORCISED</h4><ul></ul>";
+    filtered.forEach(({ t, idx }) => (t.done ? col2 : col1).querySelector("ul").appendChild(buildTaskCard(t, idx)));
+    grid.appendChild(col1); grid.appendChild(col2); container.appendChild(grid);
+  } else {
+    const ul = document.createElement("ul"); ul.id = "taskList";
+    filtered.forEach(({ t, idx }) => ul.appendChild(buildTaskCard(t, idx)));
+    container.appendChild(ul);
+  }
 }
 
 const fx = document.getElementById("fxCanvas"), fctx = fx.getContext("2d");
