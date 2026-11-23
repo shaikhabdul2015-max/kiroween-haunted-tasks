@@ -91,7 +91,6 @@ function setWorkspace(ws, btn) { currentWorkspace = ws; document.querySelectorAl
     filtered.forEach(({ t, idx }) => ul.appendChild(buildTaskCard(t, idx)));
     container.appendChild(ul);
   }
-}
 
 const fx = document.getElementById("fxCanvas"), fctx = fx.getContext("2d");
 let pts = Array.from({ length: 24 }, () => ({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, vx: (Math.random() - 0.5) * 0.4, vy: -Math.random() * 0.5 - 0.1, r: Math.random() * 2 + 1, a: 0.4, b: false }));
@@ -108,59 +107,6 @@ function spawnBurst(x, y, n) { const cols = ["#ff6b00", "#38b000", "#9d4edd", "#
   });
   requestAnimationFrame(loop);
 })();
-
-document.getElementById("taskInput").addEventListener("keypress", e => { if (e.key === "Enter") addTask(); });
-renderTasks();
-setInterval(renderTasks, 1000);function renderTasks() {
-  const container = document.getElementById("taskContainer"), q = document.getElementById("searchInput").value.toLowerCase(), f = document.getElementById("filterSelect").value;
-  const vis = currentWorkspace === "all" ? tasks : tasks.filter(t => (t.workspace || "coding") === currentWorkspace);
-  const doneCount = vis.filter(t => t.done).length;
-  document.getElementById("totalCount").innerText = vis.length; document.getElementById("doneCount").innerText = doneCount; document.getElementById("activeCount").innerText = vis.length - doneCount;
-  drawChart(doneCount, vis.length); renderHeatmap(); renderTrophies();
-  const lv = Math.floor(xp / 200) + 1, ranks = ["Novice", "Seeker", "Hunter", "Architect", "Overlord"];
-  document.getElementById("rankBadge").innerText = "Lv." + lv + " " + ranks[Math.min(lv - 1, 4)];
-  document.getElementById("xpText").innerText = (xp % 200) + " / 200 XP";
-  document.getElementById("xpFill").style.width = (((xp % 200) / 200) * 100) + "%";
-
-  const filtered = [];
-  tasks.forEach((t, idx) => {
-    const ws = t.workspace || "coding";
-    if (currentWorkspace !== "all" && ws !== currentWorkspace) return;
-    if (!t.text.toLowerCase().includes(q)) return;
-    if ((f === "active" && t.done) || (f === "done" && !t.done) || (f === "doom" && t.priority !== "doom")) return;
-    filtered.push({ t, idx });
-  });
-
-  container.innerHTML = "";
-  if (viewMode === "board") {
-    const grid = document.createElement("div"); grid.className = "board-grid";
-    const col1 = document.createElement("div"); col1.className = "board-col"; col1.innerHTML = "<h4>🎃 CURSED</h4><ul></ul>";
-    const col2 = document.createElement("div"); col2.className = "board-col"; col2.innerHTML = "<h4>👻 EXORCISED</h4><ul></ul>";
-    filtered.forEach(({ t, idx }) => (t.done ? col2 : col1).querySelector("ul").appendChild(buildTaskCard(t, idx)));
-    grid.appendChild(col1); grid.appendChild(col2); container.appendChild(grid);
-  } else {
-    const ul = document.createElement("ul"); ul.id = "taskList";
-    filtered.forEach(({ t, idx }) => ul.appendChild(buildTaskCard(t, idx)));
-    container.appendChild(ul);
-  }
-}
-
-const fx = document.getElementById("fxCanvas"), fctx = fx.getContext("2d");
-let pts = Array.from({ length: 24 }, () => ({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, vx: (Math.random() - 0.5) * 0.4, vy: -Math.random() * 0.5 - 0.1, r: Math.random() * 2 + 1, a: 0.4, b: false }));
-function spawnBurst(x, y, n) { const cols = ["#ff6b00", "#38b000", "#9d4edd", "#ffbe0b", "#00f5d4"]; for (let i = 0; i < n; i++) { const ang = Math.random() * 6.28, sp = Math.random() * 4 + 1.5; pts.push({ x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, r: 3, a: 1, c: cols[i % 5], b: true }); } }
-(function loop() {
-  if (fx.width !== innerWidth) { fx.width = innerWidth; fx.height = innerHeight; }
-  fctx.clearRect(0, 0, fx.width, fx.height);
-  pts = pts.filter(p => !p.b || p.a > 0.03);
-  pts.forEach(p => {
-    p.x += p.vx; p.y += p.vy;
-    if (p.b) { p.vy += 0.08; p.a -= 0.022; } else { if (p.y < 0) p.y = fx.height; if (p.x < 0) p.x = fx.width; if (p.x > fx.width) p.x = 0; }
-    fctx.globalAlpha = Math.max(0, p.a); fctx.fillStyle = p.c || "#ff9e00";
-    fctx.beginPath(); fctx.arc(p.x, p.y, p.r, 0, 6.28); fctx.fill();
-  });
-  requestAnimationFrame(loop);
-})();
-
 document.getElementById("taskInput").addEventListener("keypress", e => { if (e.key === "Enter") addTask(); });
 renderTasks();
 setInterval(renderTasks, 1000);
