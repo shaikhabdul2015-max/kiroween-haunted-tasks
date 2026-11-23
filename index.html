@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎃 Kiroween Quantum v7.0</title>
-  <link rel="stylesheet" href="style.css?v=7.0">
+  <title>🎃 Kiroween Apex v8.0</title>
+  <link rel="stylesheet" href="style.css?v=8.0">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ff6b00">
 </head>
@@ -16,16 +16,17 @@
         <span id="rankBadge" class="badge">Lv.1 🕯️ Novice</span>
         <div class="top-controls">
           <span id="streakBadge" class="streak-badge">🔥 1d</span>
-          <button class="icon-btn" onclick="cycleView()" id="viewToggleBtn" title="Switch List/Board">🗂️ Board</button>
+          <button class="icon-btn" onclick="cycleView()" id="viewToggleBtn">🗂️ Board</button>
           <button class="icon-btn" onclick="cycleTheme()">🎨</button>
           <button id="soundToggle" class="icon-btn" onclick="toggleSound()">🔊</button>
         </div>
       </div>
-      <h1>🎃 Kiroween Quantum v7.0 👻</h1>
+      <h1>🎃 Kiroween Apex v8.0 👻</h1>
       <div class="xp-container">
         <div class="xp-info"><span>Soul Power (XP)</span><span id="xpText">0 / 200 XP</span></div>
         <div class="xp-bar"><div id="xpFill"></div></div>
       </div>
+      <div id="trophyRow" class="trophy-row"></div>
     </header>
     <div class="heatmap-card">
       <div class="hm-header"><small>📊 7-DAY VELOCITY & HEATMAP</small><small id="todayCount">Today: 0</small></div>
@@ -50,13 +51,13 @@
       </div>
     </div>
     <div class="input-group">
-      <div class="voice-row"><input type="text" id="taskInput" placeholder="Summon task or tap 🎙️..."><button id="voiceBtn" class="voice-btn" onclick="startVoiceInput()">🎙️</button></div>
+      <div class="voice-row"><input type="text" id="taskInput" placeholder="Try: 'Fix bug 15m !doom #coding' or 🎙️"><button id="voiceBtn" class="voice-btn" onclick="startVoiceInput()">🎙️</button></div>
       <div class="row">
         <select id="workspaceSelect"><option value="coding">💻 Coding</option><option value="study">📚 Study</option><option value="personal">🏠 Personal</option></select>
         <select id="prioritySelect"><option value="minor">🕯️ Minor (+25)</option><option value="hex">🔮 Hex (+50)</option><option value="doom">💀 Doom (+100)</option></select>
         <select id="timerSelect"><option value="0">⏳ None</option><option value="1">⏱️ 1m</option><option value="15">⏱️ 15m</option><option value="60">⏱️ 1h</option></select>
       </div>
-      <button class="primary-btn" onclick="addTask()">⚡ Summon Task</button>
+      <button class="primary-btn" onclick="addTask()">⚡ Smart Summon</button>
     </div>
     <div class="controls">
       <input type="text" id="searchInput" placeholder="🔍 Search..." oninput="renderTasks()">
@@ -64,13 +65,13 @@
     </div>
     <div id="taskContainer"><ul id="taskList"></ul></div>
     <div class="footer-actions">
+      <button class="sec-btn" onclick="shareBoard()">🔗 Share</button>
       <button class="sec-btn" onclick="copyReport()">📋 Report</button>
       <button class="sec-btn" onclick="exportCSV()">📊 CSV</button>
       <button class="sec-btn" onclick="exportData()">⬇️ JSON</button>
-      <button class="sec-btn" onclick="document.getElementById('importFile').click()">⬆️ Load</button>
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
     </div>
   </div>
-  <script src="script.js?v=7.0"></script>
+  <script src="script.js?v=8.0"></script>
 </body>
 </html>
