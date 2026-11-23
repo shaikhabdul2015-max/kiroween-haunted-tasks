@@ -3,23 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎃 Kiroween Haunted Tasks</title>
+  <title>🎃 Kiroween Haunted Tasks Pro</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>🎃 Kiroween Haunted Tasks 👻</h1>
-    <p class="subtitle">Banish your cursed tasks before midnight...</p>
+    <header>
+      <h1>🎃 Kiroween Pro 👻</h1>
+      <p class="subtitle">Exorcise your tasks before the curse strikes...</p>
+      <button id="soundToggle" class="icon-btn" onclick="toggleSound()">🔊 Sound: ON</button>
+    </header>
+
+    <div class="stats">
+      <div class="stat-box"><span id="totalCount">0</span><small>Total</small></div>
+      <div class="stat-box"><span id="activeCount">0</span><small>Cursed</small></div>
+      <div class="stat-box"><span id="doneCount">0</span><small>Exorcised</small></div>
+    </div>
+
     <div class="input-group">
       <input type="text" id="taskInput" placeholder="Enter a cursed task...">
-      <select id="prioritySelect">
-        <option value="minor">🕯️ Minor Curse</option>
-        <option value="hex">🔮 Hex</option>
-        <option value="doom">💀 Deadly Doom</option>
-      </select>
-      <button onclick="addTask()">Summon</button>
+      <div class="row">
+        <select id="prioritySelect">
+          <option value="minor">🕯️ Minor Curse</option>
+          <option value="hex">🔮 Hex</option>
+          <option value="doom">💀 Deadly Doom</option>
+        </select>
+        <select id="timerSelect">
+          <option value="0">⏳ No Timer</option>
+          <option value="1">⏱️ 1 Min (Test)</option>
+          <option value="15">⏱️ 15 Mins</option>
+          <option value="60">⏱️ 1 Hour</option>
+        </select>
+      </div>
+      <button class="primary-btn" onclick="addTask()">⚡ Summon Task</button>
     </div>
+
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="🔍 Search curses..." oninput="renderTasks()">
+      <select id="filterSelect" onchange="renderTasks()">
+        <option value="all">All</option>
+        <option value="active">Active</option>
+        <option value="done">Exorcised</option>
+        <option value="doom">Deadly Doom</option>
+      </select>
+    </div>
+
     <ul id="taskList"></ul>
+
+    <div class="footer-actions">
+      <button class="sec-btn" onclick="exportData()">⬇️ Backup JSON</button>
+      <button class="sec-btn" onclick="clearCompleted()">🧹 Clear Exorcised</button>
+    </div>
   </div>
   <script src="script.js"></script>
 </body>
