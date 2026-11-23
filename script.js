@@ -1,10 +1,17 @@
-let tasks = JSON.parse(localStorage.getItem('hauntedTasksPro')) || [];
+let tasks = [];
+try {
+  tasks = JSON.parse(localStorage.getItem('hauntedTasksPro')) || [];
+} catch (e) {
+  tasks = [];
+}
 let soundEnabled = true;
 
 function playSpookySound(type) {
   if (!soundEnabled) return;
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
@@ -12,22 +19,23 @@ function playSpookySound(type) {
     if (type === 'summon') {
       osc.type = 'sawtooth';
       osc.frequency.setValueAtTime(140, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(55, ctx.currentTime + 0.35);
+      osc.frequency.exponentialRampToValueAtTime(55, ctx.currentTime + 0.3);
     } else {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(300, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(750, ctx.currentTime + 0.25);
     }
     gain.gain.setValueAtTime(0.15, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
     osc.start();
-    osc.stop(ctx.currentTime + 0.35);
+    osc.stop(ctx.currentTime + 0.3);
   } catch (e) {}
 }
 
 function toggleSound() {
   soundEnabled = !soundEnabled;
-  document.getElementById('soundToggle').innerText = soundEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
+  const btn = document.getElementById('soundToggle');
+  if (btn) btn.innerText = soundEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
 }
 
 function saveAndRender() {
@@ -38,12 +46,16 @@ function saveAndRender() {
 function addTask() {
   const input = document.getElementById('taskInput');
   const priority = document.getElementById('prioritySelect').value;
-  const mins = parseInt(document.getElementById('timerSelect').value);
-  if (!input.value.trim()) return;
+  const mins = parseInt(document.getElementById('timerSelect').value, 10) || 0;
+  const text = input.value.trim();
+  if (!text) {
+    input.focus();
+    return;
+  }
   tasks.unshift({
     id: Date.now(),
-    text: input.value.trim(),
-    priority,
+    text: text,
+    priority: priority,
     done: false,
     deadline: mins > 0 ? Date.now() + mins * 60000 : null
   });
@@ -54,7 +66,11 @@ function addTask() {
 
 function toggleTask(id) {
   const t = tasks.find(x => x.id === id);
-  if (t) { t.done = !t.done; playSpookySound('exorcise'); saveAndRender(); }
+  if (t) {
+    t.done = !t.done;
+    playSpookySound('exorcise');
+    saveAndRender();
+  }
 }
 
 function deleteTask(id) {
@@ -77,9 +93,13 @@ function exportData() {
 
 function renderTasks() {
   const list = document.getElementById('taskList');
-  const query = document.getElementById('searchInput').value.toLowerCase();
-  const filter = document.getElementById('filterSelect').value;
-  
+  const searchEl = document.getElementById('searchInput');
+  const filterEl = document.getElementById('filterSelect');
+  if (!list) return;
+
+  const query = searchEl ? searchEl.value.toLowerCase() : '';
+  const filter = filterEl ? filterEl.value : 'all';
+
   document.getElementById('totalCount').innerText = tasks.length;
   document.getElementById('doneCount').innerText = tasks.filter(t => t.done).length;
   document.getElementById('activeCount').innerText = tasks.filter(t => !t.done).length;
@@ -96,8 +116,10 @@ function renderTasks() {
     let isOverdue = false;
     if (t.deadline && !t.done) {
       const diff = t.deadline - Date.now();
-      if (diff <= 0) { isOverdue = true; timerHtml = '<span class="timer-badge">💀 CURSE UNLEASHED!</span>'; }
-      else {
+      if (diff <= 0) {
+        isOverdue = true;
+        timerHtml = '<span class="timer-badge">💀 CURSE UNLEASHED!</span>';
+      } else {
         const m = Math.floor(diff / 60000);
         const s = Math.floor((diff % 60000) / 1000);
         timerHtml = `<span class="timer-badge">⏱️ ${m}m ${s}s left</span>`;
@@ -114,5 +136,13 @@ function renderTasks() {
   });
 }
 
-setInterval(renderTasks, 1000);
-renderTasks();
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('taskInput');
+  if (input) {
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') addTask();
+    });
+  }
+  renderTasks();
+  setInterval(renderTasks, 1000);
+});
