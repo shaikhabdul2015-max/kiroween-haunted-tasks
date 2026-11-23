@@ -15,7 +15,7 @@ function startVoiceInput() {
   if (!SR) return alert("Voice API not supported in this browser. Try Chrome!");
   const btn = document.getElementById("voiceBtn"), rec = new SR();
   rec.lang = "en-US"; btn.classList.add("listening");
-  rec.onresult = e => { document.getElementById("taskInput").value = e.results.transcript; btn.classList.remove("listening"); addTask(); };
+  rec.onresult = e => { document.getElementById("taskInput").value = e.results[0][0].transcript; btn.classList.remove("listening"); addTask(); };
   rec.onerror = e => { btn.classList.remove("listening"); alert("Mic Error: " + e.error); };
   rec.onend = () => btn.classList.remove("listening");
   try { rec.start(); } catch (err) { btn.classList.remove("listening"); }
