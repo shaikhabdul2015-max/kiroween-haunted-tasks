@@ -110,3 +110,28 @@ function spawnBurst(x, y, n) { const cols = ["#ff6b00", "#38b000", "#9d4edd", "#
 document.getElementById("taskInput").addEventListener("keypress", e => { if (e.key === "Enter") addTask(); });
 renderTasks();
 setInterval(renderTasks, 1000);
+function renderTasks() {
+  const c = document.getElementById("taskContainer"), q = document.getElementById("searchInput").value.toLowerCase(), f = document.getElementById("filterSelect").value;
+  const vis = currentWorkspace === "all" ? tasks : tasks.filter(t => (t.workspace || "coding") === currentWorkspace);
+  const done = vis.filter(t => t.done).length;
+  document.getElementById("totalCount").innerText = vis.length; document.getElementById("doneCount").innerText = done; document.getElementById("activeCount").innerText = vis.length - done;
+  drawChart(done, vis.length); renderHeatmap(); renderTrophies();
+  const lv = Math.floor(xp / 200) + 1, ranks = ["Novice", "Seeker", "Hunter", "Architect", "Overlord"];
+  document.getElementById("rankBadge").innerText = "Lv." + lv + " " + ranks[Math.min(lv - 1, 4)];
+  document.getElementById("xpText").innerText = (xp % 200) + " / 200 XP";
+  document.getElementById("xpFill").style.width = (((xp % 200) / 200) * 100) + "%";
+  const flt = []; tasks.forEach((t, idx) => { const ws = t.workspace || "coding"; if ((currentWorkspace === "all" || ws === currentWorkspace) && t.text.toLowerCase().includes(q) && !((f === "active" && t.done) || (f === "done" && !t.done) || (f === "doom" && t.priority !== "doom"))) flt.push({ t, idx }); });
+  c.innerHTML = "";
+  if (viewMode === "board") {
+    const g = document.createElement("div"); g.className = "board-grid";
+    const c1 = document.createElement("div"); c1.className = "board-col"; c1.innerHTML = "<h4>🎃 CURSED</h4><ul></ul>";
+    const c2 = document.createElement("div"); c2.className = "board-col"; c2.innerHTML = "<h4>👻 EXORCISED</h4><ul></ul>";
+    flt.forEach(({ t, idx }) => (t.done ? c2 : c1).querySelector("ul").appendChild(buildTaskCard(t, idx)));
+    g.appendChild(c1); g.appendChild(c2); c.appendChild(g);
+  } else {
+    const ul = document.createElement("ul"); ul.id = "taskList"; flt.forEach(({ t, idx }) => ul.appendChild(buildTaskCard(t, idx))); c.appendChild(ul);
+  }
+}
+function spawnBurst() {}
+document.getElementById("taskInput").addEventListener("keypress", e => { if (e.key === "Enter") addTask(); });
+renderTasks(); setInterval(renderTasks, 1000);
