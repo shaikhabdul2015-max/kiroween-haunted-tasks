@@ -146,3 +146,18 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTasks();
   setInterval(renderTasks, 1000);
 });
+  if (fx.width !== innerWidth) { fx.width = innerWidth; fx.height = innerHeight; }
+  fctx.clearRect(0, 0, fx.width, fx.height);
+  pts = pts.filter(p => !p.b || p.a > 0.03);
+  pts.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.b) { p.vy += 0.08; p.a -= 0.022; } else { if (p.y < 0) p.y = fx.height; if (p.x < 0) p.x = fx.width; if (p.x > fx.width) p.x = 0; }
+    fctx.globalAlpha = Math.max(0, p.a); fctx.fillStyle = p.c || '#ff9e00';
+    fctx.beginPath(); fctx.arc(p.x, p.y, p.r, 0, 6.28); fctx.fill();
+  });
+  requestAnimationFrame(loop);
+})();
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('taskInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') addTask(); });
+  renderTasks(); setInterval(renderTasks, 1000);
+});

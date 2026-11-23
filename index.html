@@ -3,66 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎃 Kiroween Elite v3.0</title>
+  <title>🎃 Kiroween Enterprise v5.0</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ff6b00">
 </head>
-<body>
+<body data-theme="haunted">
+  <canvas id="fxCanvas"></canvas>
   <div class="container">
     <header>
       <div class="top-bar">
-        <span id="rankBadge" class="badge">🕯️ Novice Exorcist</span>
-        <button id="soundToggle" class="icon-btn" onclick="toggleSound()">🔊 ON</button>
+        <span id="rankBadge" class="badge">Lv.1 🕯️ Novice Exorcist</span>
+        <div class="top-controls">
+          <button class="icon-btn" onclick="cycleTheme()">🎨 Theme</button>
+          <button id="soundToggle" class="icon-btn" onclick="toggleSound()">🔊</button>
+        </div>
       </div>
-      <h1>🎃 Kiroween Elite 👻</h1>
+      <h1>🎃 Kiroween Enterprise 👻</h1>
       <div class="xp-container">
         <div class="xp-info"><span>Soul Power (XP)</span><span id="xpText">0 / 200 XP</span></div>
         <div class="xp-bar"><div id="xpFill"></div></div>
       </div>
     </header>
-
+    <div class="workspace-tabs">
+      <button class="tab-btn active" onclick="setWorkspace('all', this)">🌌 All</button>
+      <button class="tab-btn" onclick="setWorkspace('coding', this)">💻 Coding</button>
+      <button class="tab-btn" onclick="setWorkspace('study', this)">📚 Study</button>
+      <button class="tab-btn" onclick="setWorkspace('personal', this)">🏠 Personal</button>
+    </div>
+    <div class="pomo-card">
+      <div class="pomo-left"><small>🕯️ FOCUS RITUAL (25m = +150 XP)</small><div id="pomoDisplay">25:00</div></div>
+      <div class="pomo-actions"><button id="pomoStartBtn" onclick="togglePomo()">▶ Start</button><button class="sec-mini" onclick="resetPomo()">↺</button></div>
+    </div>
     <div class="analytics-card">
-      <canvas id="progressChart" width="90" height="90"></canvas>
+      <canvas id="progressChart" width="80" height="80"></canvas>
       <div class="stats">
         <div class="stat-box"><span id="totalCount">0</span><small>Total</small></div>
         <div class="stat-box"><span id="activeCount">0</span><small>Cursed</small></div>
         <div class="stat-box"><span id="doneCount">0</span><small>Exorcised</small></div>
       </div>
     </div>
-
     <div class="input-group">
-      <input type="text" id="taskInput" placeholder="Summon a new cursed task...">
+      <div class="voice-row"><input type="text" id="taskInput" placeholder="Summon task or tap 🎙️..."><button id="voiceBtn" class="voice-btn" onclick="startVoiceInput()">🎙️</button></div>
       <div class="row">
-        <select id="prioritySelect">
-          <option value="minor">🕯️ Minor Curse (+25 XP)</option>
-          <option value="hex">🔮 Hex (+50 XP)</option>
-          <option value="doom">💀 Deadly Doom (+100 XP)</option>
-        </select>
-        <select id="timerSelect">
-          <option value="0">⏳ No Timer</option>
-          <option value="1">⏱️ 1 Min</option>
-          <option value="15">⏱️ 15 Mins</option>
-          <option value="60">⏱️ 1 Hour</option>
-        </select>
+        <select id="workspaceSelect"><option value="coding">💻 Coding</option><option value="study">📚 Study</option><option value="personal">🏠 Personal</option></select>
+        <select id="prioritySelect"><option value="minor">🕯️ Minor (+25)</option><option value="hex">🔮 Hex (+50)</option><option value="doom">💀 Doom (+100)</option></select>
+        <select id="timerSelect"><option value="0">⏳ None</option><option value="1">⏱️ 1m</option><option value="15">⏱️ 15m</option><option value="60">⏱️ 1h</option></select>
       </div>
       <button class="primary-btn" onclick="addTask()">⚡ Summon Task</button>
     </div>
-
     <div class="controls">
-      <input type="text" id="searchInput" placeholder="🔍 Search curses..." oninput="renderTasks()">
-      <select id="filterSelect" onchange="renderTasks()">
-        <option value="all">All</option>
-        <option value="active">Active</option>
-        <option value="done">Exorcised</option>
-        <option value="doom">Deadly Doom</option>
-      </select>
+      <input type="text" id="searchInput" placeholder="🔍 Search..." oninput="renderTasks()">
+      <select id="filterSelect" onchange="renderTasks()"><option value="all">All</option><option value="active">Active</option><option value="done">Exorcised</option><option value="doom">Doom</option></select>
     </div>
-
-    <p class="hint">💡 Tip: Use ▲/▼ to reorder or ✏️ to edit tasks</p>
     <ul id="taskList"></ul>
-
     <div class="footer-actions">
+      <button class="sec-btn" onclick="copyReport()">📋 Report</button>
       <button class="sec-btn" onclick="exportData()">⬇️ Backup</button>
       <button class="sec-btn" onclick="document.getElementById('importFile').click()">⬆️ Restore</button>
       <button class="sec-btn danger" onclick="clearCompleted()">🧹 Clear</button>
@@ -70,6 +66,6 @@
     </div>
   </div>
   <script src="script.js"></script>
-  <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js");}</script>
+  <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").then(r=>r.update());}</script>
 </body>
 </html>
