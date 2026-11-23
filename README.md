@@ -1,17 +1,15 @@
-# 🎃 Kiroween Haunted Tasks Pro 👻
+# 🎃 Kiroween Ultra v6.0 — Gamified AI Productivity PWA 👻
 
-A production-ready, offline-capable **Progressive Web App (PWA)** task manager built with zero external dependencies.
+A high-performance, zero-dependency **Progressive Web App (PWA)** combining gamified task management, real-time HTML5 Canvas analytics, voice commands, and procedural Web Audio synthesis.
 
-### 🚀 Live Demo
-**[Launch Kiroween Pro](https://github.io)**
+### 🚀 Live Application
+**[Launch Kiroween Ultra v6.0](https://github.io)**
 
-### ✨ Key Engineering Features
-- **Web Audio API Synthesizer:** Real-time procedural sound effects generated natively in the browser without external MP3 assets.
-- **Live Countdown & Overdue Alerts:** Real-time deadline tracking with CSS keyframe shake animations when tasks expire.
-- **Offline-First PWA:** Powered by a custom Service Worker (`sw.js`) and `manifest.json` for native mobile installation.
-- **Real-Time Analytics & Filtering:** Dynamic stats dashboard with instant search and priority filtering (`Minor Curse`, `Hex`, `Deadly Doom`).
-- **Data Portability:** One-click JSON backup export and persistent `localStorage` state management.
-
-### 🛠️ Tech Stack
-- **Frontend:** Semantic HTML5, Modern CSS3 (Grid, Flexbox, Keyframe Animations), Vanilla ES6+ JavaScript
-- **Browser APIs:** Web Audio API, Service Workers, Web Storage API, Blob/File API
+### ✨ Enterprise & Ultra Features
+- **🎙️ Voice-to-Task Engine (Web Speech API):** Hands-free task creation using native browser speech recognition.
+- **📊 7-Day Activity Heatmap & Streak Tracker:** GitHub-style daily consistency visualizer with automatic streak calculation.
+- **✨ Smart Task Auto-Breakdown:** One-click task decomposition into actionable subtasks.
+- **🎮 Gamified XP & Rank System:** Dynamic level progression, live HTML5 Canvas donut chart, and particle explosion physics (`requestAnimationFrame`).
+- **🕯️ Pomodoro Focus Ritual:** Built-in 25-minute deep-work timer with desktop/mobile push notifications and bonus XP rewards.
+- **🔊 Procedural Web Audio Synthesizer:** Real-time sound effects generated via Web Audio API without external audio files.
+- **🌌 Multi-Workspace & Theme Architecture:** Instant filtering across workspaces (`Coding`, `Study`, `Personal`), dynamic CSS custom property themes, JSON Backup/Restore, and one-click Markdown Executive Reports.
