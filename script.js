@@ -46,16 +46,18 @@ function addTask() {
   if (/#coding\b/i.test(text)) { workspace = "coding"; text = text.replace(/#coding\b/ig, ""); }
   if (/#study\b/i.test(text)) { workspace = "study"; text = text.replace(/#study\b/ig, ""); }
   if (/#personal\b/i.test(text)) { workspace = "personal"; text = text.replace(/#personal\b/ig, ""); }
+  let recurring = false; if (/#daily\b/i.test(text)) { recurring = true; text = text.replace(/#daily\b/ig, ""); }
   if (/!doom\b/i.test(text)) { priority = "doom"; text = text.replace(/!doom\b/ig, ""); }
   if (/!hex\b/i.test(text)) { priority = "hex"; text = text.replace(/!hex\b/ig, ""); }
   const tm = text.match(/\b(\d+)m\b/i); if (tm) { mins = parseInt(tm, 10); text = text.replace(tm, ""); }
   text = text.replace(/\s+/g, " ").trim() || "Mystery Ritual";
-  tasks.unshift({ id: Date.now(), text, workspace, priority, done: false, rewarded: false, subtasks: [], deadline: mins > 0 ? Date.now() + mins * 60000 : null });
+  tasks.unshift({ id: Date.now(), text, workspace, priority, done: false, rewarded: false, recurring, trackedSec: 0, tracking: false, subtasks: [], deadline: mins > 0 ? Date.now() + mins * 60000 : null });
   input.value = ""; playSpookySound("summon"); saveAndRender();
 }
 function smartSplitTask(id) { const t = tasks.find(x => x.id === id); if (!t) return; t.subtasks = t.subtasks || []; ["📐 Plan: " + t.text, "⚡ Execute core steps", "✅ Test & finalize"].forEach(s => t.subtasks.push({ text: s, done: false })); playSpookySound("exorcise"); saveAndRender(); }
 function toggleSubtask(tid, sIdx) { const t = tasks.find(x => x.id === tid); if (t && t.subtasks && t.subtasks[sIdx]) { t.subtasks[sIdx].done = !t.subtasks[sIdx].done; saveAndRender(); } }
-function toggleTask(id) { const t = tasks.find(x => x.id === id); if (!t) return; t.done = !t.done; if (t.done && !t.rewarded) { xp += t.priority === "doom" ? 100 : t.priority === "hex" ? 50 : 25; t.rewarded = true; recordActivity(); } playSpookySound("exorcise"); saveAndRender(); }
+function toggleTask(id) { const t = tasks.find(x => x.id === id); if (!t) return; if (t.recurring && !t.done) { xp += t.priority === "doom" ? 100 : t.priority === "hex" ? 50 : 25; recordActivity(); playSpookySound("exorcise"); alert("🔁 Daily Habit Completed! XP Awarded & reset for tomorrow."); saveAndRender(); return; }
+  t.done = !t.done; if (t.done && !t.rewarded) { xp += t.priority === "doom" ? 100 : t.priority === "hex" ? 50 : 25; t.rewarded = true; recordActivity(); } playSpookySound("exorcise"); saveAndRender(); }
 function moveTask(i, d) { const n = i + d; if (n >= 0 && n < tasks.length) { [tasks[i], tasks[n]] = [tasks[n], tasks[i]]; saveAndRender(); } }
 function deleteTask(id) { tasks = tasks.filter(x => x.id !== id); saveAndRender(); }
 function exportCSV() { let csv = "Task,Workspace,Priority,Status\n"; tasks.forEach(t => { csv += `"${t.text.replace(/"/g, '""')}",${t.workspace || "coding"},${t.priority},${t.done ? "Done" : "Active"}\n`; }); const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "kiroween-apex-v8.csv"; a.click(); }
@@ -77,7 +79,7 @@ function buildTaskCard(t, idx) {
   if (t.deadline && !t.done) { const diff = t.deadline - Date.now(); if (diff <= 0) { overdue = true; timerHtml = "<span class='timer-badge'>EXPIRED!</span>"; } else timerHtml = "<span class='timer-badge'>" + Math.floor(diff/60000) + "m " + Math.floor((diff%60000)/1000) + "s</span>"; }
   const subs = (t.subtasks || []).map((s, si) => "<div class='sub-item " + (s.done?"sub-done":"") + "' onclick='toggleSubtask(" + t.id + "," + si + ")'>" + (s.done?"[x] ":"[ ] ") + s.text + "</div>").join("");
   const li = document.createElement("li"); li.className = "task-card " + t.priority + (t.done?" done":"") + (overdue?" overdue":"");
-  li.innerHTML = "<div class='task-top'><div class='task-info'><div class='main-text'>" + t.text + "</div><div class='meta-row'><span class='tag-badge'>" + ws + "</span>" + timerHtml + "</div></div><div class='actions'><button class='ai-btn' onclick='smartSplitTask(" + t.id + ")'>✨Split</button><button onclick='moveTask(" + idx + ",-1)'>▲</button><button onclick='moveTask(" + idx + ",1)'>▼</button><button class='ex-btn' onclick='toggleTask(" + t.id + ")'>" + (t.done?"Undo":"✓") + "</button><button class='del-btn' onclick='deleteTask(" + t.id + ")'>✕</button></div></div>" + (subs ? "<div class='subtasks'>" + subs + "</div>" : "");
+  li.innerHTML = "<div class='task-top'><div class='task-info'><div class='main-text'>" + t.text + "</div><div class='meta-row'><span class='tag-badge'>" + ws + "</span>" + (t.recurring ? "<span class='tag-badge'>🔁daily</span>" : "") + "<span class='tag-badge' onclick='toggleTrack(" + t.id + ")' style='cursor:pointer'>" + (t.tracking ? "⏸ " : "⏱️ ") + Math.floor((t.trackedSec||0)/60) + "m</span>" + timerHtml + "</div></div><div class='actions'><button class='ai-btn' onclick='smartSplitTask(" + t.id + ")'>✨Split</button><button onclick='moveTask(" + idx + ",-1)'>▲</button><button onclick='moveTask(" + idx + ",1)'>▼</button><button class='ex-btn' onclick='toggleTask(" + t.id + ")'>" + (t.done?"Undo":"✓") + "</button><button class='del-btn' onclick='deleteTask(" + t.id + ")'>✕</button></div></div>" + (subs ? "<div class='subtasks'>" + subs + "</div>" : "");
   return li;
 }
 function renderTasks() {
@@ -111,7 +113,7 @@ function toggleCmd() {
 function loadDemo() {
   tasks.unshift(
     { id: Date.now()+1, text: "Deploy Production API", workspace: "coding", priority: "doom", done: false, rewarded: false, subtasks: [{text:"📐 Check env keys",done:true},{text:"🚀 Push build",done:false}], deadline: Date.now()+900000 },
-    { id: Date.now()+2, text: "System Design Revision", workspace: "study", priority: "hex", done: false, rewarded: false, subtasks: [], deadline: null }
+    { id: Date.now()+2, text: "System Design Revision", workspace: "study", priority: "hex", done: false, rewarded: false, recurring, trackedSec: 0, tracking: false, subtasks: [], deadline: null }
   );
   saveAndRender();
 }
@@ -146,3 +148,6 @@ function drawWsBars() {
 }
 setInterval(drawWsBars, 1000);
 drawWsBars();
+
+function toggleTrack(id) { const t = tasks.find(x => x.id === id); if (t) { t.tracking = !t.tracking; saveAndRender(); } }
+setInterval(() => { let ch = false; tasks.forEach(t => { if (t.tracking && !t.done) { t.trackedSec = (t.trackedSec || 0) + 1; ch = true; } }); if (ch) localStorage.setItem("hauntedTasksPro", JSON.stringify(tasks)); }, 1000);
