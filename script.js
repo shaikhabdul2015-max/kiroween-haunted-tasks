@@ -135,3 +135,21 @@ function renderTasks() {
 function spawnBurst() {}
 document.getElementById("taskInput").addEventListener("keypress", e => { if (e.key === "Enter") addTask(); });
 renderTasks(); setInterval(renderTasks, 1000);
+function drawChart(done, total) {
+  const c = document.getElementById("progressChart"); if (!c) return;
+  const ctx = c.getContext("2d"), pct = total === 0 ? 0 : done / total;
+  ctx.clearRect(0, 0, 76, 76); ctx.lineWidth = 8; ctx.strokeStyle = "rgba(255,255,255,0.1)";
+  ctx.beginPath(); ctx.arc(38, 38, 28, 0, Math.PI * 2); ctx.stroke();
+  ctx.strokeStyle = "#38b000"; ctx.lineCap = "round";
+  ctx.beginPath(); ctx.arc(38, 38, 28, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * pct); ctx.stroke();
+  ctx.fillStyle = "#fff"; ctx.font = "bold 12px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillText(Math.round(pct * 100) + "%", 38, 38);
+}
+function buildTaskCard(t, idx) {
+  const ws = t.workspace || "coding";
+  const subs = (t.subtasks || []).map((s, si) => "<div class='sub-item " + (s.done?"sub-done":"") + "' onclick='toggleSubtask(" + t.id + "," + si + ")'>" + (s.done?"[x] ":"[ ] ") + s.text + "</div>").join("");
+  const li = document.createElement("li"); li.className = "task-card " + t.priority + (t.done?" done":"");
+  li.innerHTML = "<div class='task-top'><div class='task-info'><div class='main-text'>" + t.text + "</div><div class='meta-row'><span class='tag-badge'>" + ws + "</span></div></div><div class='actions'><button class='ai-btn' onclick='smartSplitTask(" + t.id + ")'>✨Split</button><button onclick='moveTask(" + idx + ",-1)'>▲</button><button onclick='moveTask(" + idx + ",1)'>▼</button><button class='ex-btn' onclick='toggleTask(" + t.id + ",event)'>" + (t.done?"Undo":"✓") + "</button><button class='del-btn' onclick='deleteTask(" + t.id + ")'>✕</button></div></div>" + (subs ? "<div class='subtasks'>" + subs + "</div>" : "");
+  return li;
+}
+renderTasks();
