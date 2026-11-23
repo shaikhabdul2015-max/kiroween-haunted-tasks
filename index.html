@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎃 Kiroween Apex v8.0</title>
+  <title>🎃 Kiroween Singularity v9.0</title>
   <link rel="stylesheet" href="style.css?v=9.2">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ff6b00">
@@ -16,17 +16,17 @@
         <span id="rankBadge" class="badge">Lv.1 🕯️ Novice</span>
         <div class="top-controls">
           <span id="streakBadge" class="streak-badge">🔥 1d</span>
-          <button class="icon-btn" onclick="cycleView()" id="viewToggleBtn">🗂️ Board</button>
+          <button class="icon-btn" onclick="cycleView()" id="viewToggleBtn">🗂️ Board</button><button class="icon-btn" onclick="toggleCmd()">⚡Cmd</button>
           <button class="icon-btn" onclick="cycleTheme()">🎨</button>
           <button id="soundToggle" class="icon-btn" onclick="toggleSound()">🔊</button>
         </div>
       </div>
-      <h1>🎃 Kiroween Apex v8.0 👻</h1>
+      <h1>🎃 Kiroween Singularity v9.0 👻</h1>
       <div class="xp-container">
         <div class="xp-info"><span>Soul Power (XP)</span><span id="xpText">0 / 200 XP</span></div>
         <div class="xp-bar"><div id="xpFill"></div></div>
       </div>
-      <div id="trophyRow" class="trophy-row"></div>
+      <div id="trophyRow" class="trophy-row"></div><div id="aiCoach" style="font-size:0.74rem;color:#00f5d4;background:rgba(0,245,212,0.08);padding:6px 10px;border-radius:8px;margin-bottom:8px;border:1px solid rgba(0,245,212,0.25)">🤖 AI Coach: Ready!</div>
     </header>
     <div class="heatmap-card">
       <div class="hm-header"><small>📊 7-DAY VELOCITY & HEATMAP</small><small id="todayCount">Today: 0</small></div>
@@ -72,6 +72,7 @@
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
     </div>
   </div>
-  <script src="script.js?v=9.2"></script>
+  <script src="script.js?v=9.5"></script>
+<div id="cmdModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99;align-items:center;justify-content:center"><div style="background:#1a0b2e;border:1px solid #ff6b00;padding:16px;border-radius:14px;width:85%;max-width:340px"><h3 style="margin:0 0 10px;color:#ff6b00">⚡ Command Palette</h3><button class="primary-btn" style="margin-bottom:8px" onclick="loadDemo();toggleCmd()">✨ Load Demo Tasks</button><button class="primary-btn" style="margin-bottom:8px" onclick="clearDone();toggleCmd()">🧹 Clear Completed</button><button class="primary-btn" style="margin-bottom:8px" onclick="shareBoard();toggleCmd()">🔗 Copy Share Link</button><button class="sec-btn" style="width:100%" onclick="toggleCmd()">✕ Close</button></div></div>
 </body>
 </html>

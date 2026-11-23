@@ -104,3 +104,25 @@ function renderTasks() {
 }
 document.getElementById("taskInput").addEventListener("keypress", e => { if (e.key === "Enter") addTask(); });
 renderTasks(); setInterval(renderTasks, 1000);
+function toggleCmd() {
+  const m = document.getElementById("cmdModal");
+  if (m) m.style.display = m.style.display === "flex" ? "none" : "flex";
+}
+function loadDemo() {
+  tasks.unshift(
+    { id: Date.now()+1, text: "Deploy Production API", workspace: "coding", priority: "doom", done: false, rewarded: false, subtasks: [{text:"📐 Check env keys",done:true},{text:"🚀 Push build",done:false}], deadline: Date.now()+900000 },
+    { id: Date.now()+2, text: "System Design Revision", workspace: "study", priority: "hex", done: false, rewarded: false, subtasks: [], deadline: null }
+  );
+  saveAndRender();
+}
+function clearDone() { tasks = tasks.filter(t => !t.done); saveAndRender(); }
+setInterval(() => {
+  const coach = document.getElementById("aiCoach"); if (!coach) return;
+  const active = tasks.filter(t => !t.done), doom = active.filter(t => t.priority === "doom");
+  coach.innerText = doom.length > 0
+    ? "🤖 AI Coach: 🔥 " + doom.length + " Deadly Doom task(s) pending — tackle them first for +100 XP!"
+    : active.length > 0
+    ? "🤖 AI Coach: ⚡ " + active.length + " active task(s) left. Tap ✨Split or start a 25m Focus Ritual!"
+    : "🤖 AI Coach: 🏆 Zero backlog! Tap ⚡Cmd to load demo tasks or summon a new goal.";
+}, 1000);
+renderTasks();
